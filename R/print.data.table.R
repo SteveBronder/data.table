@@ -77,7 +77,11 @@ print.data.table = function(x, topn=getOption("datatable.print.topn"),
   require_bit64_if_needed(x)
 
   # FR #353 - add row.names = logical argument to print.data.table
-  if (isTRUE(row.names)) rownames(toprint)=paste0(format(rn,right=TRUE,scientific=FALSE),":") else rownames(toprint)=rep.int("", nrow(toprint))
+  if (isTRUE(row.names)) {
+    rownames(toprint) = paste0(format(rn,right=TRUE,scientific=FALSE),":")
+  } else {
+    rownames(toprint) = rep.int("", nrow(toprint))
+  }
   if (is.null(names(x)) || all(names(x) == ""))
     # fixes bug #97 and #545
     colnames(toprint)=rep("", ncol(toprint))
@@ -187,10 +191,10 @@ has_format_method = function(x) {
 }
 
 format_col.default = function(x, ...) {
-  if (!is.null(dim(x)))
-    "<multi-column>"
-  else if (has_format_method(x) && length(formatted<-format(x, ...))==length(x))
+  if (has_format_method(x) && length(formatted<-format(x, ...))==length(x))
     formatted  #PR5224 motivated by package sf where column class is c("sfc_MULTIPOLYGON","sfc") and sf:::format.sfc exists
+  else if (!is.null(dim(x)))
+    "<multi-column>"
   else if (is.list(x))
     vapply_1c(x, format_list_item, ...)
   else

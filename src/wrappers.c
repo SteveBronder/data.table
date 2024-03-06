@@ -113,7 +113,11 @@ SEXP dim(SEXP x)
     INTEGER(ans)[1] = 0;
   }
   else {
-    INTEGER(ans)[0] = length(VECTOR_ELT(x, 0));
+    SEXP first_col = VECTOR_ELT(x, 0);
+    SEXP call = PROTECT(lang2(install("length"), first_col));
+    first_col = PROTECT(eval(call, R_GlobalEnv));
+    INTEGER(ans)[0] = INTEGER(first_col)[0];
+    UNPROTECT(2);
     INTEGER(ans)[1] = length(x);
   }
   UNPROTECT(1);
